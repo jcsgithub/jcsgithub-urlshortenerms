@@ -9,6 +9,22 @@ module.exports = function (app) {
 			res.sendFile(path + '/public/index.html');
 		});
 		
+	app.route('/:short_url')
+		.get(function (req, res) {
+			Urls
+	            .findOne({ 'short_url': req.params.short_url })
+	            .select('-_id -__v')
+	            .exec(function (err, result) {
+	                if (err) { throw err; }
+	                
+	                if (!result) {
+	                	res.status(400).send({ error: "Short URL not found in the database." });
+	                } else {
+	                	res.redirect(result.original_url);
+	                }
+	            });
+		});
+		
 	app.route('/new/*')
 		.get(function (req, res) {
 			var url = req.params[0];
