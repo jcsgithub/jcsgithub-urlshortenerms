@@ -33,16 +33,27 @@ module.exports = function (app) {
 			if (!regExp.test(url)) { 
 				res.status(400).send({ error: "Invalid URL format. Make sure you have a valid protocol and real site." });
 			} else {
-				var short_url = randomString(15);
+				Urls
+		            .findOne({ 'original_url': url })
+		            .select('-_id -__v')
+		            .exec(function (err, result) {
+		                if (err) { throw err; }
+		                
+		                if (!result) {
+		                	var short_url = randomString(15);
 				
-				var newUrl = new Urls();
-		        newUrl.original_url = url;
-		        newUrl.short_url = short_url;
-				newUrl.save(function (err) {
-					if (err) { throw err; }
-					
-					res.status(200).send({ original_url: url, short_url: short_url });
-				});
+							var newUrl = new Urls();
+					        newUrl.original_url = url;
+					        newUrl.short_url = short_url;
+							newUrl.save(function (err) {
+								if (err) { throw err; }
+								
+								res.status(200).send({ original_url: url, short_url: short_url });
+							});
+		                } else {
+		                	res.status(200).send(result);
+		                }
+		            });
 			}
 		});
 };
