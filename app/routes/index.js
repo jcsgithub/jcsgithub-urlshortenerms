@@ -39,6 +39,8 @@ module.exports = function (app) {
 		            .exec(function (err, result) {
 		                if (err) { throw err; }
 		                
+		                var main_url = 'https://jcsgithub-urlshortenerms.herokuapp.com/';
+		                
 		                if (!result) {
 		                	var short_url = randomString(15);
 				
@@ -48,10 +50,10 @@ module.exports = function (app) {
 							newUrl.save(function (err) {
 								if (err) { throw err; }
 								
-								res.status(200).send({ original_url: url, short_url: short_url });
+								res.status(200).send({ original_url: url, short_url: main_url + short_url });
 							});
 		                } else {
-		                	res.status(200).send(result);
+		                	res.status(200).send({ original_url: result.original_url, short_url: main_url + result.short_url });
 		                }
 		            });
 			}
